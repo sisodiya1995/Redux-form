@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react"
+import { useSelector, shallowEqual, useDispatch } from "react-redux"
 
-function App() {
+
+import { Formdata } from "./component/formData"
+import { AddForm } from "./component/addForm"
+import { addArticle, removeArticle } from "./store/actionCreators"
+import { Dispatch } from "redux"
+
+const App: React.FC = () => {
+  const Forms: readonly IForm[] = useSelector(
+    (state: FormState) => state.Forms,
+    shallowEqual
+  )
+
+  const dispatch: Dispatch<any> = useDispatch()
+
+  const saveForm = React.useCallback(
+    (Form: IForm) => dispatch(addArticle(Form)),
+    [dispatch]
+  )
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <main>
+      <h1>User form</h1>
+      <AddForm saveForm={saveForm} />
+      {Forms.map((Form: IForm) => (
+        <Formdata
+          key={Form.id}
+          Form={Form}
+          removeForm={removeArticle}
+        />
+      ))}
+    </main>
+  )
 }
-
-export default App;
+export default App
